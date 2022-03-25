@@ -1,0 +1,20 @@
+{
+  "name": "unstable-stat-server",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "start:server": "node server.js",
+    "start:client": "node client.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ionian-wind/unstable-stat-server.git"
+  },
+  "author": "Dmitry Shadrunov <ionian.wind@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ionian-wind/unstable-stat-server/issues"
+  },
+  "homepage": "https://github.com/ionian-wind/unstable-stat-server#readme"
+}
