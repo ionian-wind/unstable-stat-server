@@ -1,4 +1,4 @@
-import http from "http";
+import httpServer, { statusCodeToMessage } from "./lib/httpServer.js";
 import processOnExit from "./lib/processOnExit.js";
 import logger from "./lib/logger.js";
 import getRandomInt from "./lib/getRandomInt.js";
@@ -37,7 +37,7 @@ const getMedianResponse = () => {
 };
 
 const sendError = (req, res, status) =>
-  res.writeHead(status).end(http.STATUS_CODES[status]);
+  res.writeHead(status).end(statusCodeToMessage(status));
 
 const saveStatistics = (time) => {
   statistics.total += 1;
@@ -75,34 +75,31 @@ const responseProbabilities = [
   hangUpResponse,
 ];
 
-http
-  .createServer(async (req, res) => {
-    try {
-      if (req.method === "POST" && req.url === "/data") {
-        const buffers = [];
+httpServer(host, port, async (req, res) => {
+  try {
+    if (req.method === "POST" && req.url === "/data") {
+      const buffers = [];
 
-        for await (const chunk of req) {
-          buffers.push(chunk);
-        }
-
-        const body = Buffer.concat(buffers).toString();
-
-        const handler =
-          responseProbabilities[
-            getRandomInt(0, responseProbabilities.length - 1)
-          ];
-
-        handler(req, res, body);
-      } else {
-        sendError(req, res, 404);
+      for await (const chunk of req) {
+        buffers.push(chunk);
       }
-    } catch (error) {
-      logger(error);
-      sendError(req, res, 500);
+
+      const body = Buffer.concat(buffers).toString();
+
+      const handler =
+        responseProbabilities[
+          getRandomInt(0, responseProbabilities.length - 1)
+        ];
+
+      handler(req, res, body);
+    } else {
+      sendError(req, res, 404);
     }
-  })
-  .on("connection", (socket) => socket.setNoDelay()) // no need of Nagle algorithm here
-  .listen(port, host, () => logger(`listening http://%s:%s`, host, port));
+  } catch (error) {
+    logger(error);
+    sendError(req, res, 500);
+  }
+});
 
 processOnExit(() => {
   logger(
