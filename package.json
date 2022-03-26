@@ -2,6 +2,9 @@
   "name": "unstable-stat-server",
   "version": "1.0.0",
   "description": "",
+  "engines": {
+    "node": ">=14"
+  },
   "type": "module",
   "scripts": {
     "start:server": "node server.js",
