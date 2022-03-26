@@ -1,8 +1,8 @@
 import httpRequest, {
-  HTTP_METHOD,
   RequestTimeoutError,
   RequestFailedError,
 } from "./lib/httpRequest.js";
+import { HTTP_METHOD } from "./lib/constants.js";
 import exponentialBackoff from "./lib/exponentialBackoff.js";
 import processOnExit from "./lib/processOnExit.js";
 import logger from "./lib/logger.js";

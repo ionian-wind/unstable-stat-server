@@ -2,6 +2,7 @@ import httpServer, { statusCodeToMessage } from "./lib/httpServer.js";
 import processOnExit from "./lib/processOnExit.js";
 import logger from "./lib/logger.js";
 import getRandomInt from "./lib/getRandomInt.js";
+import { HTTP_METHOD } from "./lib/constants.js";
 
 const host = process.env.SERVER_HOST || "localhost";
 const port =
@@ -77,21 +78,20 @@ const responseProbabilities = [
 
 httpServer(host, port, async (req, res) => {
   try {
-    if (req.method === "POST" && req.url === "/data") {
-      const buffers = [];
+    if (req.method.toLowerCase() === HTTP_METHOD.POST && req.url === "/data") {
+      req.setEncoding("utf-8");
+      const content = [];
 
       for await (const chunk of req) {
-        buffers.push(chunk);
+        content.push(chunk);
       }
-
-      const body = Buffer.concat(buffers).toString();
 
       const handler =
         responseProbabilities[
           getRandomInt(0, responseProbabilities.length - 1)
         ];
 
-      handler(req, res, body);
+      handler(req, res, content.join(""));
     } else {
       sendError(req, res, 404);
     }
